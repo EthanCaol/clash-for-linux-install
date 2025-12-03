@@ -296,8 +296,10 @@ _download_clash() {
 _download_raw_config() {
     local dest=$1
     local url=$2
-    local agent='clash-verge/v2.0.4'
-    sudo curl \
+    local agent='ClashforWindows/0.20.39'
+    local proxy="http://127.0.0.1:7890"
+
+    sudo https_proxy="$proxy" http_proxy="$proxy" curl \
         --silent \
         --show-error \
         --insecure \
@@ -307,7 +309,7 @@ _download_raw_config() {
         --user-agent "$agent" \
         --output "$dest" \
         "$url" ||
-        sudo wget \
+        sudo https_proxy="$proxy" http_proxy="$proxy" wget \
             --no-verbose \
             --no-check-certificate \
             --timeout 3 \
