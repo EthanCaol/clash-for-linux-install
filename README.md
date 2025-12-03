@@ -5,18 +5,71 @@
 ### 一键安装
 
 - 首先需要保证本机已配置好Clash代理, 并且开启7890端口的局域网共享
-- 然后在ssh连接使用Remote-SSH方式, 转发7890端口, 配置示例如下:
+- 然后在ssh连接使用Remote-SSH方式, 转发到远程的7892端口, 配置示例如下:
 ```
 Host ethancao
     HostName xxx
     User ethan
-    RemoteForward 7890 localhost:7890
+    RemoteForward 7892 localhost:7890
 ```
 
-
+- 执行以下命令进行安装：
 ```bash
 git clone --branch master --depth 1 https://gh-proxy.com/https://github.com/EthanCaol/clash-for-linux-install.git && cd clash-for-linux-install && sudo bash install.sh
+```
 
+- 安装完成后, 启用系统代理:
+```bash
+clashctl proxy
+```
+
+- 在.bashrc中添加以下代码, 每次登录自动启用代理:
+```bash
+proxy_addr=127.0.0.1
+proxy_port=7890
+function proxy_on() {
+    export http_proxy=http://$proxy_addr:$proxy_port
+    export https_proxy=http://$proxy_addr:$proxy_port
+    export no_proxy=$proxy_addr,localhost
+    export HTTP_PROXY=http://$proxy_addr:$proxy_port
+    export HTTPS_PROXY=http://$proxy_addr:$proxy_port
+    export NO_PROXY=$proxy_addr,localhost
+}
+function proxy_off(){
+    unset http_proxy
+    unset https_proxy
+    unset no_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    unset NO_PROXY
+}
+proxy_on
+```
+
+### Web 控制台
+
+- 需要在防火墙放行9090端口
+```bash
+$ clashui
+╔═══════════════════════════════════════════════╗
+║                😼 Web 控制台                  ║
+║═══════════════════════════════════════════════║
+║                                               ║
+║     🔓 注意放行端口：9090                      ║
+║     🏠 内网：http://192.168.0.1:9090/ui       ║
+║     🌏 公网：http://255.255.255.255:9090/ui   ║
+║     ☁️ 公共：http://board.zash.run.place      ║
+║                                               ║
+╚═══════════════════════════════════════════════╝
+
+$ clashsecret 666
+😼 密钥更新成功，已重启生效
+
+$ clashsecret
+😼 当前密钥：666
+```
+
+```bash
 Usage: 
   clashctl COMMAND [OPTIONS]
 
@@ -50,27 +103,7 @@ $ clashoff
 - 在启停代理内核的同时，自动同步设置系统代理。
 - 亦可通过 `clashproxy` 单独控制系统代理。
 
-### Web 控制台
 
-```bash
-$ clashui
-╔═══════════════════════════════════════════════╗
-║                😼 Web 控制台                  ║
-║═══════════════════════════════════════════════║
-║                                               ║
-║     🔓 注意放行端口：9090                      ║
-║     🏠 内网：http://192.168.0.1:9090/ui       ║
-║     🌏 公网：http://255.255.255.255:9090/ui   ║
-║     ☁️ 公共：http://board.zash.run.place      ║
-║                                               ║
-╚═══════════════════════════════════════════════╝
-
-$ clashsecret 666
-😼 密钥更新成功，已重启生效
-
-$ clashsecret
-😼 当前密钥：666
-```
 
 - 通过浏览器打开 Web 控制台，实现可视化操作：切换节点、查看日志等。
 - 若暴露到公网使用建议定期更换密钥。

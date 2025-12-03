@@ -297,7 +297,7 @@ _download_raw_config() {
     local dest=$1
     local url=$2
     local agent='ClashforWindows/0.20.39'
-    local proxy="http://127.0.0.1:7890"
+    local proxy="http://127.0.0.1:7892"
 
     sudo https_proxy="$proxy" http_proxy="$proxy" curl \
         --silent \
