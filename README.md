@@ -20,12 +20,11 @@
 在终端中执行以下命令即可完成安装：
 
 ```bash
-git clone --branch master --depth 1 https://gh-proxy.org/https://github.com/nelvko/clash-for-linux-install.git \
+git clone --branch master --depth 1 https://github.com/EthanCaol/clash-for-linux-install.git \
   && cd clash-for-linux-install \
   && bash install.sh
 ```
 
-- 上述命令使用了[加速前缀](https://gh-proxy.org/)，如失效可更换其他[可用链接](https://ghproxy.link/)。
 - 可通过 `.env` 文件或脚本参数自定义安装选项。
 - 没有订阅？[click me](https://次元.net/auth/register?code=oUbI)
 
