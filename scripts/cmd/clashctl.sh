@@ -246,6 +246,21 @@ _merge_config() {
           )
         ) +
         ($mixin.proxy-groups.suffix // [])
+      ) |
+
+      ########################################
+      #         ProxyGroups Inject           #
+      # 把 inject 表里的 proxy 名追加到对应   #
+      # 已有 group 的 .proxies 列表（自动去重）#
+      # 用途：把自定义 / 链式代理无侵入地     #
+      # 插入到订阅自带的节点组里，避免        #
+      # override 整组的麻烦                  #
+      ########################################
+      ($mixin.proxy-groups.inject // {}) as $inj |
+      .proxy-groups[] |= (
+        . as $g |
+        ($inj | .[$g.name] // []) as $extra |
+        .proxies = (.proxies + $extra | unique)
       )
     ' "$CLASH_CONFIG_BASE" "$CLASH_CONFIG_MIXIN" >"$CLASH_CONFIG_RUNTIME"
     _valid_config "$CLASH_CONFIG_RUNTIME" || {
@@ -316,6 +331,8 @@ _tunstatus() {
 _tunoff() {
     _tunstatus >/dev/null || return 0
     sudo placeholder_stop
+    # 强制恢复终端输出处理
+    stty opost 2>/dev/null
     clashstatus >&/dev/null || {
         "$BIN_YQ" -i '.tun.enable = false' "$CLASH_CONFIG_MIXIN"
         _merge_config
@@ -329,6 +346,8 @@ _sudo_restart() {
     sudo placeholder_stop
     placeholder_sudo_start
     sleep 0.5
+    # 强制恢复终端输出处理
+    stty opost 2>/dev/null
 }
 _tunon() {
     _tunstatus 2>/dev/null && return 0
@@ -337,6 +356,9 @@ _tunon() {
     _merge_config
     placeholder_sudo_start
     sleep 0.5
+    # 强制恢复终端输出处理
+    stty opost 2>/dev/null
+
     clashstatus >&/dev/null || _error_quit "Tun 模式开启失败"
     local fail_msg="Start TUN listening error|unsupported kernel version"
     local ok_msg="Tun adapter listening at|TUN listening iface"
